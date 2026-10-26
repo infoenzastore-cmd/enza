@@ -50,7 +50,12 @@ export function verifyPayment(order, hash, transaction, operations, config, used
   if (!transaction || transaction.hash?.toLowerCase()!==hash.toLowerCase() || transaction.successful!==true) throw new Error('Transaction not successful');
   if (transaction.network_passphrase && transaction.network_passphrase!==NETWORK) throw new Error('Wrong network');
   if (transaction.memo_type!=='text' || transaction.memo!==order.memo) throw new Error('Wrong order memo');
-  if (Date.parse(transaction.created_at)>Date.parse(order.expiresAt)) throw new Error('Payment expired');
+  const createdAt=Date.parse(transaction.created_at);
+  const orderCreatedAt=Date.parse(order.createdAt);
+  const expiresAt=Date.parse(order.expiresAt);
+  if (!Number.isFinite(createdAt) || !Number.isFinite(orderCreatedAt) || !Number.isFinite(expiresAt)) throw new Error('Invalid transaction or order timestamp');
+  if (createdAt < orderCreatedAt || createdAt > expiresAt) throw new Error('Payment outside order validity window');
+  if (!Array.isArray(operations) || operations.length!==1) throw new Error('Expected exactly one operation');
   const matches=operations.filter(op=>op.type==='payment' && op.to===config.merchant && op.asset_code==='USDC' && op.asset_issuer===config.issuer && amountToUnits(op.amount)===amountToUnits(order.amount));
   if (matches.length!==1) throw new Error('Incorrect destination, asset, or amount');
   return {...order,status:'paid',hash,paidAt:transaction.created_at,ticket:order.kind==='event' ? `DEMO-${order.id.slice(0,8)}`:null};

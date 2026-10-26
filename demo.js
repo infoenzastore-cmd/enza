@@ -1,5 +1,6 @@
 const $ = id => document.getElementById(id);
-const staticPreview = location.hostname.endsWith('.github.io');
+// Netlify and GitHub Pages publish only the static preview. Real Testnet payments remain local-only.
+const staticPreview = location.hostname.endsWith('.github.io') || location.hostname.endsWith('.netlify.app');
 const previewConfig = {
   issuer: 'No asset used in this preview',
   merchant: 'No destination in this preview',
@@ -189,8 +190,8 @@ try {
     $('demo-intro').textContent = 'Choose a sample to preview the checkout flow. This hosted preview does not require a wallet and does not submit a payment.';
     $('review-network').textContent = 'Static preview · no network';
     $('review-asset').textContent = 'Illustrative USDC price';
-    $('checkout-note').textContent = 'This GitHub Pages preview does not use a wallet, submit a Testnet transaction, or fulfill a real order. The ticket shown is illustrative only.';
-    status('GitHub Pages preview: choose a sample to explore checkout. No Testnet payment or on-chain order confirmation occurs here.');
+    $('checkout-note').textContent = 'This hosted static preview does not use a wallet, submit a Testnet transaction, or fulfill a real order. The ticket shown is illustrative only.';
+    status('Hosted static preview: choose a sample to explore checkout. No Testnet payment or on-chain order confirmation occurs here.');
   } else {
     await refreshWallet();
     status(config.configured

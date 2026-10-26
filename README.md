@@ -12,9 +12,11 @@ Coding agents must read [AGENTS.md](AGENTS.md) and [thesis.md](thesis.md). This 
 - `demo.html` — sample product and experience checkout using the same local payment API.
 - `blueprint.html` — preserved strategy presentation from this repository's earlier homepage.
 
-## GitHub Pages preview
+## Hosted static previews (Netlify and GitHub Pages)
 
-The public site at [infoenzastore-cmd.github.io/enza](https://infoenzastore-cmd.github.io/enza/) serves the source HTML, CSS and JavaScript from `main`. Its checkout is an explicitly labeled **simulation**: it lets visitors select the sample product or experience and see a preview ticket, but sends no payment and claims no on-chain confirmation. GitHub Pages cannot run this repository's Node API. Use the local Testnet steps below for real network settlement.
+Netlify builds the static site from `dist/` using `netlify.toml`. The hosted checkout on [enzamx.netlify.app](https://enzamx.netlify.app/) and the [GitHub Pages preview](https://infoenzastore-cmd.github.io/enza/) are explicitly labelled **simulations**: visitors can select a sample and see a preview ticket, but no payment is submitted and no on-chain confirmation is claimed. The frontend detects these static hosts and does not call the local payment API. Netlify's static deployment does not run `server.js`; real Testnet settlement remains local-only until a separately designed, durable serverless backend is implemented.
+
+Do not configure the current server-held demo wallet for public deployment. Its signing key and order state are process-local, and serverless cold starts or concurrent instances would break the flow.
 
 ## Local Testnet demo
 

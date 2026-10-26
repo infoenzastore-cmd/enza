@@ -2,3 +2,7 @@ node_modules/
 .env
 .data/
 dist/
+
+# Rust/Soroban contract build and test artifacts
+contracts/enza-checkout/target/
+contracts/enza-checkout/test_snapshots/

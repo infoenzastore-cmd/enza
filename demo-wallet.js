@@ -1,5 +1,5 @@
 import { Asset, BASE_FEE, Keypair, Operation, TransactionBuilder, Horizon } from '@stellar/stellar-sdk';
-import { HORIZON_URL, NETWORK, amountToUnits, buildPayment, validateSignedPayment } from './payment.js';
+import { HORIZON_URL, NETWORK, amountToUnits } from './payment.js';
 
 const FRIEND_BOT = 'https://friendbot.stellar.org';
 
@@ -39,16 +39,21 @@ export function createDemoWallet({horizon = new Horizon.Server(HORIZON_URL), fun
     return {address, ready: true, xlm, usdc};
   }
 
-  async function signPayment(order, config) {
+  // Signs the checkout envelope staged by the server. The key exists only in
+  // this process's memory and never leaves it; this wallet is a disposable
+  // Testnet demo convenience, never the customer's own wallet.
+  function signTransaction(xdr, networkPassphrase=NETWORK) {
     if (!ready) throw new Error('Prepare the demo wallet first');
-    const balance = await balances(config.issuer);
-    if (amountToUnits(balance.usdc) < amountToUnits(order.amount)) throw new Error(`Demo wallet needs ${order.amount} Testnet USDC. Fund its public address from Circle's faucet, then refresh the balance.`);
-    const xdr = await buildPayment(order, address, config, horizon);
-    const tx = TransactionBuilder.fromXDR(xdr, NETWORK);
-    validateSignedPayment(tx, order, config);
+    const tx=TransactionBuilder.fromXDR(xdr,networkPassphrase);
     tx.sign(signer);
-    return tx;
+    return tx.toXDR();
   }
 
-  return {address, setup, balances, signPayment};
+  async function ensureFunds(order, issuer) {
+    if (!ready) throw new Error('Prepare the demo wallet first');
+    const balance=await balances(issuer);
+    if (amountToUnits(balance.usdc) < amountToUnits(order.amount)) throw new Error(`Demo wallet needs ${order.amount} Testnet USDC. Fund its public address from Circle's faucet, then refresh the balance.`);
+  }
+
+  return {address, get isReady(){return ready}, setup, balances, signTransaction, ensureFunds};
 }

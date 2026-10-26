@@ -27,9 +27,10 @@ The current repository's brand page is a presentation, not a customer website. I
 
 - ENZA Movement opens at the root with working Shop EnZa and Experience Antidote paths on desktop and mobile.
 - The live EnZa store remains reachable and unchanged; the former strategy page remains reachable as `blueprint.html`.
-- Sample Testnet product and experience checkout remain clearly labelled, with a shared payment path and no claim of production integration.
+- Sample Testnet product and experience checkout remain clearly labelled, settle through the verified Soroban checkout contract, and make no claim of production integration or live-store extension.
 - `npm ci`, `npm test`, and `npm run build` pass on Node 22+.
-- A real payment or ticket is claimed only after the disposable server wallet signs, the transaction succeeds and independent Testnet verification passes. This extension-free local demo does not demonstrate a production customer-controlled wallet flow. A successful local build alone does not satisfy this criterion.
+- An order becomes paid only after: the payer signs the exact `pay_order` invocation (customer wallet, or the clearly labelled disposable demo wallet fallback), the server validates the signed invocation against the stored intent, the transaction succeeds on Testnet, and independent on-chain verification (`get_order`, contract events) matches amount, payer, asset, merchant and correlation id. Wallet UI was integration-tested with a stand-in signer driving the same server protocol; a browser-with-extension walkthrough remains a manual step.
+- Hosted static previews (Netlify/GitHub Pages) remain preview-only and never submit payments or mark orders paid.
 
 ## Beyond this repository
 
